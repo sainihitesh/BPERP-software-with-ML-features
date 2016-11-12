@@ -1,0 +1,22 @@
+Description :
+function to Arrange Table data in Ascending and Descending Order.
+Parameters:
+1.data:
+'OrderBy'
+  values:
+	-'ID'
+	-'username'
+	-'password'
+	-'mac'
+	-'ip'
+	-'plan'
+	-'stats'
+	-'remainingData'
+	-'redunit'
+	-'name'
+2.OrderMode
+'Asc/Desc'
+  value:
+	-'ASC'
+	-'DESC'
+____________________________

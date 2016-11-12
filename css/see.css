@@ -1,0 +1,88 @@
+  @font-face {
+                    font-family: 'Creditverse';
+                    src: url('fonts/creditverse_font.ttf');
+                }
+                body{
+                    transition: ease-in-out ;
+                }
+
+                li.list-group-item ,#rtotal,#tott{
+                    font-family: 'Creditverse';
+                    font-size: large;
+                }
+                #acc,#net{
+                    height: 55px;
+                    border: 1px solid black;
+                }
+                #pass1{
+                        width: 81%;
+                }    
+                .input-group-addon{
+                        width: 19%;
+                        background: black;
+                        color: white;
+                }span{cursor: hand;}
+           html {
+            height: 100%;
+            width: 100%;
+                }
+          span#open_Acc{
+            cursor: hand;
+          }      
+          tr.undefined{
+            background:rgb(255, 255, 199);
+          }
+          tr.undefined1{
+            background:rgba(165, 42, 42, 0.94);
+          }
+          tr.undefined2{
+            background: rgba(0, 128, 110, 0.75);
+            transition: background-color 0.5s ease;
+          }
+          tr.undefined2:hover{
+            background-color:black;
+            transition: background-color 0.3s ease;
+               color: antiquewhite;
+          }
+        body ,p{
+                font-family: cursive;
+                font-weight: bold;
+                line-height:20px
+             } 
+             td{font-family: cursive;
+                font-weight: bold;}
+             td input{color:#222222}
+             td input::selection {
+                    color:black;
+                    background: transparent; 
+                                 }
+    td#user,td#Ssno,td#Spassword,td#Smac,td#Sip,td#Splan,td#Saccc,td#SRemData,td#SStat{
+            cursor: hand;
+            font-size: medium;
+    font-family: sans-serif;
+    font-variant: small-caps;
+    font-stretch: inherit;
+    font-variant-ligatures: initial;
+    font-kerning: initial;
+    font-style: initial;
+    }    
+    td#user:hover,td#Ssno:hover,td#Spassword:hover,td#Smac:hover,td#Sip:hover,td#Splan:hover,td#Saccc:hover,td#SRemData:hover,td#SStat:hover{
+        text-decoration: underline;
+    }
+    button#SortActBtn{
+            background: #ffffff;
+            color: yellowgreen;
+    }  
+    td#ViewPanel1{
+      text-align: right;
+    }    
+    .ui-widget-content.ui-chatbox-input-box.ui-corner-all
+    {
+    width: 0px;
+    height: 0px;
+    margin: 0px 0px 0px 0px;
+    opacity: 0;
+    }
+    k#rtotal{
+          color: green;
+    }

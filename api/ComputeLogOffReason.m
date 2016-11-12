@@ -1,0 +1,23 @@
+data=csvread('logoff_processed_data/7737788931');
+x=data(:,1:3);
+classes=[0,1,2];
+col4=data(:,4);
+y0=(col4==0);y1=(col4==1);y2=(col4==2);
+m = length(y0);
+X=[ones(m,1), x];
+all_theta=zeros(3,4);
+%finding min of cost function 
+options = optimset('GradObj', 'on', 'MaxIter', 50);
+initial_theta=zeros(4,1);
+lambda = 0.1;
+[theta] = fmincg(@(t)(lrcost(t, X,y0, lambda)), initial_theta, options);
+all_theta(1,:)=theta;
+[theta] = fmincg(@(t)(lrcost(t, X,y1, lambda)), initial_theta, options);
+all_theta(2,:)=theta;
+[theta] = fmincg(@(t)(lrcost(t, X,y2, lambda)), initial_theta, options);
+all_theta(3,:)=theta;
+fprintf('['); 
+fprintf('[%f,%f,%f,%f],', all_theta(1,1),all_theta(1,2),all_theta(1,3),all_theta(1,4));
+fprintf('[%f,%f,%f,%f],', all_theta(2,1),all_theta(2,2),all_theta(2,3),all_theta(2,4));
+fprintf('[%f,%f,%f,%f]' , all_theta(3,1),all_theta(3,2),all_theta(3,3),all_theta(3,4));
+fprintf(']');

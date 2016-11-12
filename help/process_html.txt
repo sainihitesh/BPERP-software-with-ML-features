@@ -1,0 +1,14 @@
+Description :
+function to check if user is online or offline 
+Parameters:
+1.data:
+'data to pass'
+  value:
+	{"ID":"520","username":"9928395938","password":"9928395938","mac":"null","ip":"null","plan":"staffspecial","stats":"Active","remainingData":"-1526.6809","remdunit":"MB","name":"puri"}
+2.Mode
+'Mode of table View'
+  value:
+	-'Active'
+	-'Expired'
+	-'Unknown'
+____________________________

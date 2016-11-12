@@ -1,0 +1,12 @@
+Description :
+function to manipulate the tables data
+Parameters:
+1.'username':
+'Username'
+  value:
+	valid username to Bangon
+2.'password'
+  'password'
+   value:
+ 	valid password to Bangon
+________________________________
