@@ -2,7 +2,7 @@
 BPERP Software is written in PHP, JS and some Octave scritps
 
 
-To setup this software up -
+To set  this software up -
 
 Required Softwares :
    1.Install Bitnami WampStack.
