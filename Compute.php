@@ -3,20 +3,20 @@ include 'mysql.php';
 include 'loginToken/token.php';
 session_start();
 /*
-#: Title: 
-#: Date: 
+#: Title:
+#: Date:
 #: Author: "Anon" <>
 #: Version: 1.0
 #: Description :
-#: Options:  
+#: Options:
 */
 if(!empty($_GET))
 {
     if($_SESSION['u']==$cred_email)
     {
-    if ($_GET['who'] == 'Tunechi99') 
+    if ($_GET['who'] == 'Tunechi99')
     {
-    if (is_file("api/Sorted_data/".$_GET["u"])) 
+    if (is_file("api/Sorted_data/".$_GET["u"]))
     {
     $u=$_GET["u"];
     $fn='ComputeTheta.m';

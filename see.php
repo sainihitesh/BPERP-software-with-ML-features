@@ -171,6 +171,7 @@ if(!empty($_GET))
     <link rel="stylesheet" type="text/css" href="plugins/notyn/buttons.css"/>
     <link rel="stylesheet" type="text/css" href="plugins/notyn/animate.css"/>
     <link rel="stylesheet" href="plugins/notyn/font-awesome/css/font-awesome.min.css"/>
+    <script type="text/javascript" src="plugins/annyang/annyang.min.js"></script>
     <!-- <script type="text/javascript" src="plugins/notyn/main.js"></script> -->
         </head>
         <body>
@@ -201,7 +202,7 @@ if(!empty($_GET))
                 <option>MAC</option>
                 <option>IP</option>
             </select>
-            <h4><input id="s" class="form-control" placeholder="Search...."/></h4>
+            <h4><input id="s" class="form-control" placeholder="Search[RegExp]"/></h4>
             </div>
               <ul class="nav nav-tabs"  style="background: #b2d8ff;">
   <li class="active"><a href="#collapseSeePage" data-toggle="tab">See Data</a></li>
@@ -486,6 +487,13 @@ $('[data-toggle="tooltip"]').tooltip();
 
 document.getElementById("s").addEventListener("keyup", function(evt){BPERP.search(evt,{tableId:'contentpane',totalId:'tott',P_link:'P_link',view:'view',OfficialDetail:'OfficialDetail',searchInputId:'s',selectType:'select',rtotal:'rtotal'})});
 
+BPERP.thirdParty.SpeechRecognition({tableId:'contentpane',totalId:'tott',rTotal:'rtotal',rTotalId:'rtotal'});
+setInterval(function(){
+  if (!navigator.onLine) 
+  {
+    alert("System is Offline!");
+  }
+},10000);
 </script>
 <script type="text/javascript" src="js/about.js"></script>
 <script type="text/javascript" src="js/OfficialData.js"></script>

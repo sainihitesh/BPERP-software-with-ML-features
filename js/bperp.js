@@ -2,11 +2,17 @@ var BPERP = {
     //data which is to be fetched from database
     data:'',
     //data crawled from pgc website
-    officialData:''
+    officialData:'',
+    //flag for checking who's online
+    isCheckingWhoIsOnline:false,
+    //flag for update data
+    isUpdatingData:false,
+    //flag for update history
+    isUpdatingHistory:false
 };
     BPERP.thirdParty = {};
     BPERP.Util={};
-    BPERP.Graph={};   
+    BPERP.Graph={};
     BPERP.History={};
     BPERP.Prediction={};
     BPERP.draw={};
@@ -15,17 +21,17 @@ BPERP.Graph.DataUsesPredictionGraph=function()
 {
     var dat={"x":0,"y":0,"indexLabel":"indexLabel"}, http,url="get.php?who=chutiya&dataUses=yes";
     var datas=[];var vale=0,Pred_Data;
-                for (var i = BPERP.data.length - 1; i >= 0; i--) 
+                for (var i = BPERP.data.length - 1; i >= 0; i--)
                      {
-                         dat.indexLabel=BPERP.data[i].name;   
-                         Pred_Data=parseInt(BPERP.data[i].PerDayUseInMB);  
-                         if(Pred_Data>0&&BPERP.data[i].stats=="Active") 
+                         dat.indexLabel=BPERP.data[i].name;
+                         Pred_Data=parseInt(BPERP.data[i].PerDayUseInMB);
+                         if(Pred_Data>0&&BPERP.data[i].stats=="Active")
                          {
                          datas.push({"x":vale,"y":parseInt(BPERP.data[i].PerDayUseInMB),"indexLabel":dat.indexLabel,"name":BPERP.data[i].name,"plan":BPERP.data[i].plan,"remainingData":BPERP.data[i].remainingData,"uname":BPERP.data[i].username});
                          vale+=5;
-                         }                        
+                         }
                      }
-                     datas=BPERP.Util.sortData(datas); 
+                     datas=BPERP.Util.sortData(datas);
                      var chart = new CanvasJS.Chart("chartContainer1", {
                 title: {
                     text: "Todays Data Uses of users(Frequent Users)"
@@ -41,16 +47,16 @@ BPERP.Graph.DataUsesPredictionGraph=function()
                     dataPoints: datas
                 }]
             });
-            chart.render();     
-}     
+            chart.render();
+}
 //noty plugin func
-BPERP.thirdParty.generate=function(type, text,layout){
+BPERP.thirdParty.generate=function(type, text,layout,strCloseWith='click'){
         var n = noty({
         text        : text,
         type        : type,
         dismissQueue: true,
         layout      : layout,
-        closeWith   : ['click'],
+        closeWith   : [strCloseWith],
         theme       : 'relax',
         maxVisible  : 10,
         animation   : {
@@ -64,12 +70,12 @@ BPERP.thirdParty.generate=function(type, text,layout){
 BPERP.Util.sortData=function(data)
 {
   var i,j,key,temp;
-  for (i =0 ; i < data.length ; i++) 
+  for (i =0 ; i < data.length ; i++)
   {
       key=data[i];
-      for (j =0 ; j < data.length ; j++) 
+      for (j =0 ; j < data.length ; j++)
       {
-              if (key.PerDayUseInMB<data[j].PerDayUseInMB) 
+              if (key.PerDayUseInMB<data[j].PerDayUseInMB)
               {
                   temp = key;
                   key  = data[j] ;
@@ -94,13 +100,13 @@ BPERP.Util.getCookie=function(cname)
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
         }
-        if (c.indexOf(name) == 0) {
+        if (c.indexOf(name) === 0) {
             return c.substring(name.length, c.length);
         }
     }
     return "";
 }
-BPERP.Util.rgba=function() 
+BPERP.Util.rgba=function()
 {
 var r = parseInt(Math.random() * 200);
 var g = parseInt(Math.random() * 200);
@@ -110,10 +116,15 @@ return ("rgba(" + r + "," + g + "," + b + "," + a + ")");
 }
 BPERP.Util.checkLogins=function(argument2)
 {
+if (!BPERP.isCheckingWhoIsOnline) 
+ {
+BPERP.isCheckingWhoIsOnline=true;
 document.cookie="UserLog=valueTrue";
 document.getElementById(argument2.tableId).innerHTML='';
 BPERP.processHtml({data:BPERP.data,viewCondition:'Active'},{tableId:argument2.tableId,totalId:argument2.totalId,rTotalId:argument2.rTotalId});
 document.cookie ='UserLog=valueTrue;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+BPERP.isCheckingWhoIsOnline=false; 
+ }
 }
 BPERP.Util.openAccDetail=function(creds)
 {
@@ -180,7 +191,7 @@ BPERP.Util.CheckAvail= function(obj,argument2)
 }
 BPERP.Util.selectThis = function(ele)
 {
-                    if (ele.type == 'password') 
+                    if (ele.type == 'password')
                     {
                         ele.type = 'text';
                         ele.select();
@@ -199,24 +210,24 @@ url = "get.php?who=chutiya";
                 http.onreadystatechange = function () {
                     if (http.status == 200 && http.readyState == 4) {
                         BPERP.data = eval(http.responseText);
-                        //DataStruct=data; 
+                        //DataStruct=data;
                         //document.getElementById("rtotal").innerHTML="&nbsp;Remaining Data="+calculateFupData(data)+" GB";
-                        BPERP.processHtml({'data':BPERP.data,viewCondition:'Active'},{tableId:'contentpane',totalId:'tott',rTotalId:'rtotal'});  
-                        //BPERP.data=data;                     
+                        BPERP.processHtml({'data':BPERP.data,viewCondition:'Active'},{tableId:'contentpane',totalId:'tott',rTotalId:'rtotal'});
+                        //BPERP.data=data;
                     }
                 }
 /*
-Description: 
-Name:sort 
+Description:
+Name:sort
 Onhover and click on label to sort the data
 Parameters:
-argument1 :className 
+argument1 :className
 */
-//Start BPERP.sort 
+//Start BPERP.sort
 BPERP.sort=function(argument1)
 {
 	var elements = document.getElementsByClassName(argument1.getAttribute("class"));
-    for (var i = 0; i < elements.length; i++) 
+    for (var i = 0; i < elements.length; i++)
     {
         elements[i].style.backgroundColor="rgba(0, 128, 110, 0.75)";
     }
@@ -227,64 +238,64 @@ BPERP.sort=function(argument1)
 
 
 /*
-Description: 
-Name:calculateFupData 
+Description:
+Name:calculateFupData
 Onhover and click on label to unsort the data
 Parameters:
-argument1 :className 
+argument1 :className
 */
-//Start BPERP.calculateFupData 
+//Start BPERP.calculateFupData
 BPERP.calculateFupData=function()
 {
   var rbalance,unit,i,total =0;
-                  for ( i=0; i < this.data.length; i++) 
-                     {   
+                  for ( i=0; i < this.data.length; i++)
+                     {
                         try
                         {
                          unit=this.data[i].remdunit ;
                            if(this.data[i].remdunit=="GB"){rbalance=1024* parseInt(this.data[i].remainingData);}
-                           else { rbalance = parseInt(this.data[i].remainingData); }  
+                           else { rbalance = parseInt(this.data[i].remainingData); }
                          // calculating the remaining data in  main balance and fup balance
                          var reg1 = new RegExp("MB"),reg2 = new RegExp("Active"),reg3 = new RegExp("GB");
                          var currentdate = new Date();
-                         var hours =parseInt(currentdate.getHours());  
-                         if ((reg1.exec(this.data[i].remdunit)||reg3.exec(this.data[i].remdunit))&&(rbalance>0)&&reg2.exec(this.data[i].stats)) 
+                         var hours =parseInt(currentdate.getHours());
+                         if ((reg1.exec(this.data[i].remdunit)||reg3.exec(this.data[i].remdunit))&&(rbalance>0)&&reg2.exec(this.data[i].stats))
                          {
                                  if(hours>18)
                                  {
                                     if(this.data[i].plan!="staff")
                                     {
-                                      total+=rbalance;  
+                                      total+=rbalance;
                                     }
-                                 }   
+                                 }
                                  else
                                  {
                                     total+=rbalance;
-                                 }        
-                         } 
+                                 }
+                         }
                         }
                         catch(e)
                         {
                             console.log("this data is without unit"+this.data[i].username);
                         }
                     }
-                   return (total/1024); 
+                   return (total/1024);
 }
 //End BPERP.calculateFupData
 
 
 /*
-Description: 
-Name:unSort 
+Description:
+Name:unSort
 Onhover and click on label to unsort the data
 Parameters:
-argument1 :className 
+argument1 :className
 */
-//Start BPERP.unSort 
+//Start BPERP.unSort
 BPERP.unSort=function(argument1)
 {
 	var elements = document.getElementsByClassName(argument1.getAttribute("class"));
-    for (var i = 0; i < elements.length; i++) 
+    for (var i = 0; i < elements.length; i++)
     {
         elements[i].style.backgroundColor="transparent";
     }
@@ -293,14 +304,14 @@ BPERP.unSort=function(argument1)
 
 
 /*
-Description: 
-Name:dataSortAD 
+Description:
+Name:dataSortAD
 on click sort Data View on see.php page
 Parameters:
 argument1 :{colomnName:'',orderBy:''}
 argument2 :{rTotalId:'',tableId:'',totalId:''}
 */
-//Start BPERP.dataSortAD 
+//Start BPERP.dataSortAD
 BPERP.dataSortAD=function(argument1,argument2)
 {
 	var http,url,data;
@@ -308,10 +319,10 @@ BPERP.dataSortAD=function(argument1,argument2)
     http=new XMLHttpRequest();
     http.open("GET",url);
     http.onreadystatechange=function(){
-      if (http.status==200&&http.readyState==4) 
+      if (http.status==200&&http.readyState==4)
       {
          document.getElementById(argument2.rTotalId).innerHTML="&nbsp;Remaining Data="+BPERP.calculateFupData()+" GB";
-      	 BPERP.thirdParty.generate("success","<span class='glyphicon glyphicon-ok'></span> Order by "+argument1.colomnName+" in "+argument1.orderBy+" Order","topRight"); 
+      	 BPERP.thirdParty.generate("success","<span class='glyphicon glyphicon-ok'></span> Order by "+argument1.colomnName+" in "+argument1.orderBy+" Order","topRight");
       	 document.getElementById(argument2.tableId).innerHTML='';
       	 BPERP.fetchData({data:this.data,viewCondition:'Active'},argument2);
       }
@@ -333,27 +344,27 @@ BPERP.fetchData=function(argument1,argument2)
                         BPERP.data=argument1.data;
                         //DataStruct=data;console.log("El");
                         //document.getElementById("rtotal").innerHTML="&nbsp;Remaining Data="+calculateFupData(data)+" GB";
-                        //BPERP.processHtml({'data':BPERP.data,viewCondition:'Active'},{tableId:'contentpane',TotalId:'tott',rTotalId:'tott'});  
-                        //BPERP.data=data;                     
+                        //BPERP.processHtml({'data':BPERP.data,viewCondition:'Active'},{tableId:'contentpane',TotalId:'tott',rTotalId:'tott'});
+                        //BPERP.data=data;
                         BPERP.processHtml(argument1,argument2);
                     }
                 }
 }
 
 /*
-Description: 
-Name:processHtml 
+Description:
+Name:processHtml
 process Html onload initial view on Content Panel
 Parameters:
 argument1 : {data:BPERP.data,viewCondition:'Active|Expired|Unknown'}
 argument2 : {tableId:'',TotalId:''}
 */
-//Start BPERP.processHtml 
-BPERP.processHtml=function(argument1,argument2) 
+//Start BPERP.processHtml
+BPERP.processHtml=function(argument1,argument2)
 {
 BPERP.Util.loading(argument2,'on');
 document.getElementById(argument2.tableId).innerHTML='';
- if (document.getElementById(argument2.tableId).innerHTML=='') 
+ if (document.getElementById(argument2.tableId).innerHTML=='')
                     {
                       var tr="";
  var tr="";
@@ -439,12 +450,12 @@ tr += "<\/tr>";
 document.getElementById(argument2.tableId).innerHTML=tr;
                     }
                     var i, ele, color, container = [], ac, vals, stats,statval;
-                    var currentdate = new Date();    
+                    var currentdate = new Date();
                     var hours =parseInt(currentdate.getHours());
                     var views = new RegExp(argument1.viewCondition);
                     var url = "getStat.php?username=", http = new XMLHttpRequest();
-                    var data_clasific={Active:0,Expired:0,Unknown:0};        
-                    for (i = this.data.length - 1; i > -1; i--) { 
+                    var data_clasific={Active:0,Expired:0,Unknown:0};
+                    for (i = this.data.length - 1; i > -1; i--) {
                         vals = JSON.stringify(this.data[i]);
                         statval=this.data[i].stats;
                         if(statval=="Expired")
@@ -462,17 +473,17 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                        }
                         else if(this.data[i].stats=="Expired"){
                           ele = "<tr class='undefined1' id='trview"+i+"'>";
-                          data_clasific.Expired++;  
+                          data_clasific.Expired++;
                         }
                         else if(this.data[i].stats=="Active"){
                           ele = "<tr class='undefined2' id='trview"+i+"'>";
-                          data_clasific.Active++;  
+                          data_clasific.Active++;
                         }
                         else{ ele = "<tr  id='trview"+i+"'>"; }
                         ele += "<td class='Ssno'>" + this.data[i].ID + "</td>" + "<td  class='user'><input data-toggle='tooltip'  title='"+this.data[i].name+"' value='" + this.data[i].username + "' class='form-control' onclick='BPERP.Util.selectThis(this)' type='text' value='" + this.data[i].username + "'/></td>" + "<td class='Spassword'><div class='input-group'><span style='coursor:hand'  title='Open Account Details' creds=\"['"+this.data[i].username+"','"+this.data[i].password +"']\" onclick='BPERP.Util.openAccDetail(this)' class='input-group-addon' id='"+i+"'>"+this.data[i].password.length+"</span><input class='form-control' onclick='BPERP.Util.selectThis(this)' id='pass1' type='password'  data-toggle='tooltip' title='"+this.data[i].password.length+"' value='" + this.data[i].password + "'/></div></td>" + "<td class='Smac'>" + this.data[i].mac + "</td>" + "<td class='Sip'>" + this.data[i].ip + "</td>" + "<td class='Splan'>" + this.data[i].plan + "</td><td class='Saccc'>" + ac + "</td><td  class='SStat'>" + statval + "</td><td  class='SRemData'>"+this.data[i].remainingData+" "+this.data[i].remdunit+"</td>";
-                        ele += "</tr>";  
+                        ele += "</tr>";
                       if(views.exec(this.data[i].stats))
-                        {   
+                        {
                         if(hours>18)
                                  {
                                     if(this.data[i].plan!="staff")
@@ -480,14 +491,14 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                                       if(this.data[i].stats=="Active"&&BPERP.Util.getCookie('UserLog')!='')
                                         {this.checkAvailability({u:this.data[i].username,p:this.data[i].password,id:i});}
                                          document.getElementById(argument2.tableId).innerHTML += ele;
-                                        } 
+                                        }
                                     }
                            else{
                                    if(this.data[i].stats=="Active"&&BPERP.Util.getCookie('UserLog')!='')
                                         {this.checkAvailability({u:this.data[i].username,p:this.data[i].password,id:i});}
-                                         document.getElementById(argument2.tableId).innerHTML += ele;     
-                           }         
-                                 }    
+                                         document.getElementById(argument2.tableId).innerHTML += ele;
+                           }
+                                 }
                         
                     }
                     document.getElementById(argument2.totalId).innerHTML = "<b><k style='color:rgb(51, 51, 51);'>Total=" + this.data.length + ",</k> <k style='color:#001dff;'> Active="+data_clasific.Active+"</k>,<k style='color:red'> Expired="+data_clasific.Expired+"</k>,<k style='color:#ff8f00;'> Unknown="+data_clasific.Unknown+"</k></b>";
@@ -496,18 +507,18 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                     if (document.getElementById(argument2.tableId).innerHTML=='') {document.getElementById(argument2.tableId).innerHTML="<h1>Nothing Found!!</h1>";}
                     BPERP.Util.loading(argument2,'off');
 }
-//End BPERP.processHtml  
+//End BPERP.processHtml
 
 
 
 /*
-Description: 
-Name:checkAvailability 
+Description:
+Name:checkAvailability
 check if user is online or offline
 Parameters:
-argument1 :{u:this.data[i].username,p:this.data[i].password,id:i} 
+argument1 :{u:this.data[i].username,p:this.data[i].password,id:i}
 */
-//Start BPERP.checkAvailability 
+//Start BPERP.checkAvailability
 BPERP.checkAvailability=function(argument1)
 {
    var url = "checkAvailability.php?u="+argument1.u+"&p="+argument1.p;
@@ -519,30 +530,30 @@ BPERP.checkAvailability=function(argument1)
                    try{
                     signal = JSON.parse(http.responseText);
                     if(signal.Stat=="Online")
-                    document.getElementById(argument1.id).style.background = "green";    
-                    else if(signal.Stat=="Offline") 
+                    document.getElementById(argument1.id).style.background = "green";
+                    else if(signal.Stat=="Offline")
                     document.getElementById(argument1.id).style.background = "red";
                     else
                     document.getElementById(argument1.id).style.background = "yellow";
                    }catch(e)
                    {
                     console.log("Error in function:checkAvailability  , "+e);
-                   }   
+                   }
                 }
 
-                http.send(); 
+                http.send();
 }
 //End BPERP.checkAvailability
 
 
 /*
-Description: 
-Name:editView 
+Description:
+Name:editView
 check if user is online or offline
 Parameters:
 argument2 : {tableId:'',TotalId:''}
 */
-//Start BPERP.editView 
+//Start BPERP.editView
 BPERP.editView=function(cmd,argument2)
 {
                 document.getElementById(argument2.tableId).innerHTML='';
@@ -556,16 +567,16 @@ BPERP.editView=function(cmd,argument2)
 
 
 /*
-Description: 
-Name:popup 
+Description:
+Name:popup
 check if user is online or offline
 Parameters:
 argument1 : this
 argument2 : {tableId:'',TotalId:'',P_link:'',view:'',OfficialDetail:''}
 */
-//Start BPERP.popup 
+//Start BPERP.popup
 BPERP.popup=function(v,argument2)
-{               
+{
                     var http,oinfo,url, htm,phonenumber,stats,selhtm,data = JSON.parse(v.getAttribute("val"));
                     data.mac = data.mac;
                     data.ip = data.ip;
@@ -581,10 +592,10 @@ BPERP.popup=function(v,argument2)
                     }
                     document.getElementById(argument2.view).innerHTML = htm;
                     oinfo = BPERP.Util.officialDataSearch(BPERP.officialData,data.username);
-                    if (oinfo) 
+                    if (oinfo)
                     {
                         document.getElementById(argument2.OfficialDetail).innerHTML="<tr><td> Name</td><td> Reg.No.</td><td> Father's Name</td><td> Mobile</td></tr>";
-                        document.getElementById(argument2.OfficialDetail).innerHTML+="<tr><td> "+oinfo.Name+"</td><td> "+oinfo.RegNo+"</td><td>"+oinfo.FatherName+"</td><td>"+oinfo.studM+"</td></tr>";    
+                        document.getElementById(argument2.OfficialDetail).innerHTML+="<tr><td> "+oinfo.Name+"</td><td> "+oinfo.RegNo+"</td><td>"+oinfo.FatherName+"</td><td>"+oinfo.studM+"</td></tr>";
                     }
                     else
                     {
@@ -596,14 +607,14 @@ BPERP.popup=function(v,argument2)
 
 
 /*
-Description: 
-Name:search 
+Description:
+Name:search
 Search in BPERP database
 Parameters:
 argument1 : evt
 argument2 : {tableId:'',TotalId:'',P_link:'',view:'',OfficialDetail:'',searchInputId:'',selectType:''}
 */
-//Start BPERP.search 
+//Start BPERP.search
 
 BPERP.search=function(evt,argument2)
 {
@@ -612,7 +623,7 @@ BPERP.search=function(evt,argument2)
                     try{
                     var i, ele, color, container = [], ac, vals, stats,statval;
                     var url = "getStat.php?username=", http = new XMLHttpRequest();
-                    var data_clasific={Active:0,Expired:0,Unknown:0};     
+                    var data_clasific={Active:0,Expired:0,Unknown:0};
                     }catch(e){console.log("var already delared in function : keypressHandler");}
     var tr="";
 tr += "<tr style=\"background: white\">";
@@ -694,13 +705,13 @@ tr += "                    class=\"dropdown-item\" onclick=\"BPERP.dataSortAD({c
 tr += "        <\/div>";
 tr += "    <\/td>";
 tr += "<\/tr>";
-document.getElementById(argument2.tableId).innerHTML=tr;                
+document.getElementById(argument2.tableId).innerHTML=tr;
         if (stype == "Select Type")
                         alert("Pick a search Criteria");
         else
         {
            reg = new RegExp(document.getElementById(argument2.searchInputId).value);
-                        if (stype == "Plan") 
+                        if (stype == "Plan")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan.replace(document.getElementById(argument2.searchInputId).value, "<k style='color:blue;'>" + document.getElementById(argument2.searchInputId).value + "</k>")
@@ -718,7 +729,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.rtotal).innerHTML="&nbsp;Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
                         //else if
-                        else if (stype == "Username") 
+                        else if (stype == "Username")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -735,7 +746,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="&nbsp;Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-                        else if (stype == "Password") 
+                        else if (stype == "Password")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -752,7 +763,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="&nbsp;Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-                        else if (stype == "Stat") 
+                        else if (stype == "Stat")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -769,7 +780,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-                        else if (stype == "Name") 
+                        else if (stype == "Name")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -786,7 +797,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-                        else if (stype == "MAC") 
+                        else if (stype == "MAC")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -803,7 +814,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-                        else if (stype == "IP") 
+                        else if (stype == "IP")
                         {
                             for (i = BPERP.data.length - 1; i > -1; i--) {
                                 planval = BPERP.data[i].plan;
@@ -820,7 +831,7 @@ document.getElementById(argument2.tableId).innerHTML=tr;
                              document.getElementById(argument2.totalId).innerHTML="Total="+count;
                              document.getElementById(argument2.rtotal).innerHTML="Remaining Data="+BPERP.calculateFupData()+" GB";
                         }
-        }                
+        }
 }
 //End BPERP.search
 BPERP.Prediction.flushFakeTableData = function(argument2)
@@ -833,7 +844,7 @@ BPERP.Prediction.getLogOffData=function(data, count,argument2)
 {
     var http, url,resText;
     if(count>-1) {
-        if(data[count].stats=="Active") 
+        if(data[count].stats=="Active")
         {
         http = new XMLHttpRequest();
         url = "api/process_logoff_data.php?u=" + data[count].username + "&p=" + data[count].password;
@@ -848,13 +859,13 @@ BPERP.Prediction.getLogOffData=function(data, count,argument2)
                     https.open("GET", urls);
                     https.onreadystatechange = function ()
                     {
-                         if (https.status == 200 && https.readyState == 4) 
+                         if (https.status == 200 && https.readyState == 4)
                          {
                             document.getElementById(argument2.RemainingInfo).innerHTML=count+" Accounts are remaining! ";
                             BPERP.Prediction.getLogOffData(data, count - 1,argument2);
-                         } 
+                         }
                     }
-                https.send();    
+                https.send();
             }
 
         }
@@ -892,7 +903,7 @@ BPERP.currentLogsCheck=function(data, count,argument2)
     document.getElementById(argument2.LogOffDetailsTable).innerHTML='';
     if(count>-1) {
         http = new XMLHttpRequest();
-        if (data[count].stats=="Active") 
+        if (data[count].stats=="Active")
         {
         url = "pluginTools/currentLogins.php?u=" + data[count].username + "&p=" + data[count].password+"&YYMMDD="+ymd;
         http.open("GET", url);
@@ -902,10 +913,10 @@ BPERP.currentLogsCheck=function(data, count,argument2)
             if (http.status == 200 && http.readyState == 4)
             {
                 try{
-                    resText = JSON.parse(http.responseText);                
+                    resText = JSON.parse(http.responseText);
                 if(resText.finalStat=="wrong Creds")
-                   document.getElementById(argument2.MsgPanel).innerHTML="<div class='alert alert-error'>Wrong cred found..</div>"; 
-                else    
+                   document.getElementById(argument2.MsgPanel).innerHTML="<div class='alert alert-error'>Wrong cred found..</div>";
+                else
                   {
                     if(resText.stat=="Active")
                         document.getElementById(argument2.MsgPanel).innerHTML="";
@@ -937,13 +948,13 @@ BPERP.currentLogsCheck=function(data, count,argument2)
             {
                 try{
                     json=JSON.parse(http.responseText);
-                    document.getElementById(argument2.MsgPanel).innerHTML="<div class='alert alert-success'>Done!</div>"                        
+                    document.getElementById(argument2.MsgPanel).innerHTML="<div class='alert alert-success'>Done!</div>"
                     document.getElementById(argument2.MsgPanel).innerHTML="";
                     datas=BPERP.History.JSONPARSE(json);
                     BPERP.process_acc_logoff_html(datas,argument2);
                 }catch(e){
                     console.log("Error in function fakeMacCheck"+e);
-                }  
+                }
             }
         }
     }
@@ -1003,10 +1014,10 @@ TableRow += "   <\/td>";
 TableRow += "<\/tr></thead>";
 
     var statval=0;
-    if (data.length>0) 
+    if (data.length>0)
     {
     body.innerHTML=TableRow;
-    for (var i = data.length - 1; i >= 0; i--) 
+    for (var i = data.length - 1; i >= 0; i--)
     {
         ele+='<tr>';
         ele +="<td>" + data[i][1] + "</td>" + "<td  class='user'><input data-toggle='tooltip'  title='"+data[i][1]+"' value='" + data[i][2] + "' class='form-control' onclick='selectThis(this)' type='text' value='" + data[i][2] + "'/></td>" + "<td class='Spassword'><div class='input-group'><span style='coursor:hand'  title='Open Account Details' creds=\"['"+data[i][2]+"','"+data[i][11] +"']\" onclick='openAccDetail(this)' class='input-group-addon' id='"+i+"'>"+data[i][11].length+"</span><input class='form-control' onclick='selectThis(this)' id='pass1' type='password'  data-toggle='tooltip' title='"+data[i][11].length+"' value='" + data[i][11] + "'/></div></td>" + "<td class='Smac'>" + data[i][6] + "</td>" + "<td class='Sip'>" + data[i][5]+ "</td><td  class='SRemData'>"+data[i][4]+"</td>"+"<td>"+data[i][9]+"</td><td><button class='btn btn-danger' onclick='BPERP.Prediction.PredictLogOff(this)' dats=\"['"+data[i][3]+"','"+data[i][4]+"','"+data[i][7]+"','"+data[i][8]+"','"+data[i][2]+"']\">predict LogOff reason</button></td>";
@@ -1032,12 +1043,12 @@ BPERP.Prediction.PredictLogOff=function(obj)
     if (dats[2].match("MB")) { dats[2] = parseFloat(dats[2].replace("MB","",dats[2])); }
     else if(dats[2].match("GB")){dats[2] = 1024*parseFloat(dats[2].replace("GB","",dats[2]));}
     else if(dats[2].match("KB")) {dats[2] = parseFloat(dats[2].replace("KB","",dats[2]))/1024;}
-    else{dats[2]=0;}   
+    else{dats[2]=0;}
 
     if (dats[3].match("MB")) { dats[3] = parseFloat(dats[3].replace("MB","",dats[3])); }
     else if(dats[3].match("GB")){dats[3] = 1024*parseFloat(dats[3].replace("GB","",dats[3]));}
     else if(dats[3].match("KB")) {dats[3] = parseFloat(dats[3].replace("KB","",dats[3]))/1024;}
-    else{dats[3]=0;} 
+    else{dats[3]=0;}
     us=dats[2]/duration;
     ds=dats[3]/duration;
     X=[1,starting_time,us,ds];
@@ -1046,7 +1057,7 @@ BPERP.Prediction.PredictLogOff=function(obj)
     http.open("GET",url);
     http.onreadystatechange=function()
     {
-        if (http.status==200&&http.readyState==4) 
+        if (http.status==200&&http.readyState==4)
         {
               try{
                 thetas = eval(http.responseText);
@@ -1054,7 +1065,7 @@ BPERP.Prediction.PredictLogOff=function(obj)
                 vals[0]=BPERP.sigmoid(X,thetas[0]);
                 vals[1]=BPERP.sigmoid(X,thetas[1]);
                 vals[2]=BPERP.sigmoid(X,thetas[2]);
-                var maxX = BPERP.Util.max(vals); 
+                var maxX = BPERP.Util.max(vals);
                 var index = vals.indexOf(maxX);
                 obj.innerHTML=classes[index];
             }catch(e){
@@ -1080,14 +1091,17 @@ BPERP.openStatPage=function(obj)
 }
 BPERP.History.scrap=function()
 {
+  if(!BPERP.isUpdatingData){
   BPERP.thirdParty.generate("information","<span class='glyphicon glyphicon-download-alt'> </span> updation has been started!!<br>","topRight");
   BPERP.thirdParty.generate("success","<span id='RemainingInfo'>"+ BPERP.data.length+" Accounts are remaining! </span>","bottomRight");
+  BPERP.isUpdatingData=true;  
   BPERP.History.updateAcc(BPERP.data,BPERP.data.length-1);
+  }
 }
 BPERP.History.updateAcc=function(data, count)
 {
     var http, url,resText;
-    if(count>-1) {
+    if(count>-1) { 
         http = new XMLHttpRequest();
         url = "curl.php?u=" + data[count].username + "&p=" + data[count].password;
         http.open("GET", url);
@@ -1097,10 +1111,10 @@ BPERP.History.updateAcc=function(data, count)
             if (http.status == 200 && http.readyState == 4)
             {
                 try{
-                resText = JSON.parse(http.responseText);                
+                resText = JSON.parse(http.responseText);
                 if(resText.finalStat=="wrong Creds")
-                  BPERP.thirdParty.generate("error"," "+ data[count].name+" has given the wrong Creds","topRight");  
-                else    
+                  BPERP.thirdParty.generate("error"," "+ data[count].name+" has given the wrong Creds","topRight");
+                else
                   {
                     if(resText.stat=="Active")
                         BPERP.thirdParty.generate("success"," "+ data[count].name+"'s Account is [ <k style='color:blue'>"+ resText.stat+"</k> ]","topRight");
@@ -1140,7 +1154,7 @@ BPERP.History.fakeMacCheck=function(data, count,argument2)
     document.getElementById(argument2.TableFakeMacs).innerHTML='';
     if(count>-1) {
         http = new XMLHttpRequest();
-        if (data[count].stats=="Active") 
+        if (data[count].stats=="Active")
         {
         url = "pluginTools/fakeMacCheckUp.php?u=" + data[count].username + "&p=" + data[count].password+"&YYMMDD="+ymd;
         http.open("GET", url);
@@ -1150,10 +1164,10 @@ BPERP.History.fakeMacCheck=function(data, count,argument2)
             if (http.status == 200 && http.readyState == 4)
             {
                 try{
-                    resText = JSON.parse(http.responseText);                
+                    resText = JSON.parse(http.responseText);
                 if(resText.finalStat=="wrong Creds")
-                   document.getElementById(argument2.MsgPane).innerHTML="<div class='alert alert-error'>Wrong cred found..</div>"; 
-                else    
+                   document.getElementById(argument2.MsgPane).innerHTML="<div class='alert alert-error'>Wrong cred found..</div>";
+                else
                   {
                     if(resText.stat=="Active")
                         document.getElementById(argument2.MsgPane).innerHTML="";
@@ -1186,13 +1200,13 @@ BPERP.History.fakeMacCheck=function(data, count,argument2)
             {
                 try{
                     json=JSON.parse(http.responseText);
-                    document.getElementById(argument2.MsgPane).innerHTML="<div class='alert alert-success'>Done!</div>"                        
+                    document.getElementById(argument2.MsgPane).innerHTML="<div class='alert alert-success'>Done!</div>"
                     document.getElementById(argument2.MsgPane).innerHTML="";
                     datas=BPERP.History.JSONPARSE(json);
                     BPERP.History.process_fakeMac_html(datas,argument2);
                 }catch(e){
                     console.log("Error in function fakeMacCheck"+e);
-                }       
+                }
             }
         }
     }
@@ -1212,10 +1226,10 @@ tbRow += "                          <td>Duration<\/td>";
 tbRow += "                          <td>+Download<\/td>";
 tbRow += "                          <\/tr>";
     var statval=0;
-    if (data.length>0) 
+    if (data.length>0)
     {
     body.innerHTML=tbRow;
-    for (var i = data.length - 1; i >= 0; i--) 
+    for (var i = data.length - 1; i >= 0; i--)
     {
         ele+='<tr>';
         ele +="<td>" + data[i][1] + "</td>" + "<td  class='user'><input data-toggle='tooltip'  title='"+data[i][1]+"' value='" + data[i][2] + "' class='form-control' onclick='selectThis(this)' type='text' value='" + data[i][2] + "'/></td>" + "<td class='Spassword'><div class='input-group'><span style='coursor:hand'  title='Open Account Details' creds=\"['"+data[i][2]+"','"+data[i][11] +"']\" onclick='openAccDetail(this)' class='input-group-addon' id='"+i+"'>"+data[i][11].length+"</span><input class='form-control' onclick='selectThis(this)' id='pass1' type='password'  data-toggle='tooltip' title='"+data[i][11].length+"' value='" + data[i][11] + "'/></div></td>" + "<td class='Smac'>" + data[i][6] + "</td>" + "<td class='Sip'>" + data[i][5]+ "</td><td  class='SRemData'>"+data[i][4]+"</td>"+"<td>"+data[i][9]+"</td>";
@@ -1233,7 +1247,7 @@ BPERP.History.JSONPARSE=function(json_arr)
 {
     var arr=[],len;
     len=arr.length;
-    for (var i = json_arr.length - 1; i >= 0; i--) 
+    for (var i = json_arr.length - 1; i >= 0; i--)
     {
         arr[i]=JSON.parse(json_arr[i]);
     }
@@ -1241,9 +1255,12 @@ BPERP.History.JSONPARSE=function(json_arr)
 }
 BPERP.History.scrapHistory=function()
 {
-BPERP.thirdParty.generate("information","<span class='glyphicon glyphicon-download-alt'> </span> updation has been started!!<br>","topRight");
-BPERP.thirdParty.generate("success","<span id='RemainingInfo'>"+ BPERP.data.length+" Accounts are remaining! </span>","bottomRight");
-BPERP.History.updateHistory(BPERP.data,BPERP.data.length-1);
+ if (!BPERP.isUpdatingHistory){
+    BPERP.thirdParty.generate("information","<span class='glyphicon glyphicon-download-alt'> </span> updation has been started!!<br>","topRight");
+    BPERP.thirdParty.generate("success","<span id='RemainingInfo'>"+ BPERP.data.length+" Accounts are remaining! </span>","bottomRight");
+    BPERP.isUpdatingHistory=true;
+    BPERP.History.updateHistory(BPERP.data,BPERP.data.length-1);
+  }
 }
 BPERP.History.updateHistory=function(data,count)
 {
@@ -1258,8 +1275,8 @@ BPERP.History.updateHistory=function(data,count)
             if (http.status == 200 && http.readyState == 4)
             {
                 if(http.responseText=="wrong Creds")
-                  BPERP.thirdParty.generate("error"," "+ data[count].name+" has given the wrong Creds","topRight");  
-                else    
+                  BPERP.thirdParty.generate("error"," "+ data[count].name+" has given the wrong Creds","topRight");
+                else
                  {
                   BPERP.thirdParty.generate("success"," "+ data[count].name+"'s Data has been updated!!","topRight");
                   document.getElementById('RemainingInfo').innerHTML=count+" Accounts are remaining! ";
@@ -1274,7 +1291,7 @@ BPERP.History.updateHistory=function(data,count)
             console.log("scrapHistory Done!!");
             window.location.reload();
     }
-} 
+}
 BPERP.History.parseData=function(username)
 {
 var http, url, data;
@@ -1315,7 +1332,7 @@ BPERP.Util.MAX=function(){return Math.max(...vals);}
 BPERP.Util.loading=function(argument2,mode)
 {
 var ld="";
-if (mode=='on') 
+if (mode=='on')
 {
   ld += "<div id=\"circleG\">";
 ld += "  <div id=\"circleG_1\" class=\"circleG\"><\/div>";
@@ -1326,7 +1343,7 @@ document.getElementById('circleGs').innerHTML=ld;
 }
 else
 {
-document.getElementById('circleGs').innerHTML='';  
+document.getElementById('circleGs').innerHTML='';
 }
 }
 BPERP.draw.render1=function(Cords)
@@ -1335,7 +1352,7 @@ BPERP.draw.render1=function(Cords)
     var chart1 = new CanvasJS.Chart("chartContainer",
            {
             title:{
-                text: "BPERP Data Statistics",      
+                text: "BPERP Data Statistics",
                 fontFamily: "arial black",
                 fontColor: "DarkSlateGrey"
             },
@@ -1352,8 +1369,8 @@ BPERP.draw.render1=function(Cords)
             },
 
             data: [
-            {        
-                type: "scatter",  
+            {
+                type: "scatter",
                 toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span> <br/> <strong>username/password </strong> {x} times<br/> <strong>password/username </strong> {y} times",
                 dataPoints:cors
             }
@@ -1367,7 +1384,7 @@ BPERP.draw.render2=function(data)
                 var BodyView;
                 var chart2 = new CanvasJS.Chart("chartContainer",{
               title:{
-                text: "BPERP Data Statistics",      
+                text: "BPERP Data Statistics",
                 fontFamily: "arial black",
                 fontColor: "DarkSlateGrey"
             },
@@ -1384,28 +1401,28 @@ BPERP.draw.render2=function(data)
             },
 
             data: [
-            {        
-                type: "scatter",  
+            {
+                type: "scatter",
                 toolTipContent: "<span style='\"'color: {color};'\"'><strong>{name}</strong></span> <br/> <strong>username length </strong> {x} <br/> <strong>password length </strong> {y} ",
                 dataPoints:Cords2
             }
             ]
            });
-                for (var i=0;i<data.length;i++) 
+                for (var i=0;i<data.length;i++)
                             {
                                 Cords2.push({name:"username:"+data[i].username+" password:"+data[i].password,x:data[i].username.length,y:data[i].password.length});
-                            }   
+                            }
                                     chart2.render();
 
 }
 BPERP.draw.calculateOccurence=function(un,pass) {
          var i ,j ,match,count=0;
-         for (var i= 0;i<un.length;i++) 
+         for (var i= 0;i<un.length;i++)
          {
            match=un[i];
-           for (var j =0;j<pass.length;j++) 
+           for (var j =0;j<pass.length;j++)
            {
-            if (match==pass[j]) 
+            if (match==pass[j])
             {
               count++;
               break;
@@ -1418,13 +1435,106 @@ BPERP.draw.calculateCoords=function(data)
   {
        var i,j,x,y,ext,name;
        var Cozs=[];var reg = new RegExp("^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$");
-       for (var i= 0;i<data.length;i++) 
+       for (var i= 0;i<data.length;i++)
        {
-          name=reg.exec(data[i].password)?"username:"+data[i].username+" password:"+data[i].password+" ( Good password)":"username:"+data[i].username+" password:"+data[i].password+"( bad password)";    
+          name=reg.exec(data[i].password)?"username:"+data[i].username+" password:"+data[i].password+" ( Good password)":"username:"+data[i].username+" password:"+data[i].password+"( bad password)";
                    x=BPERP.draw.calculateOccurence(data[i].username,data[i].password);
                    y=BPERP.draw.calculateOccurence(data[i].password,data[i].username);
            Cozs.push({x:x,y:y,name:name});
           
-       }     
+       }
         return Cozs;
   }
+BPERP.Util.playSound=function(url) {
+  var dogBarkingBuffer = null;
+// Fix up prefixing
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+
+function loadSound(url) {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  // Decode asynchronously
+  request.onload = function() {
+    context.decodeAudioData(request.response, function(buffer) {
+      dogBarkingBuffer = buffer;
+      playSound(dogBarkingBuffer);
+    }, function(){});
+  }
+  request.send();
+} 
+function playSound(buffer) {
+  var source = context.createBufferSource(); // creates a sound source
+  source.buffer = buffer;                    // tell the source which sound to play
+  source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+  source.start(0);                           // play the source now
+                                             // note: on older systems, may have to use deprecated noteOn(time);
+}                          // play the source now
+                                             // note: on older systems, may have to use deprecated noteOn(time);
+
+loadSound(url);
+
+}
+BPERP.thirdParty.SpeechRecognition=function(argument1)
+{
+  if (annyang) {
+  // Let's define our first command. First the text we expect, and then the function it should call
+  var commands = {
+    'update data': function() {
+      BPERP.Util.playSound("audios/updateData.mp3"); 
+      BPERP.thirdParty.generate("success","<span class='glyphicon glyphicon-ok'></span> At your Service Sir,BPERP is updating Data ","bottomLeft");
+      BPERP.History.scrap();
+     },
+     'update history':function(){
+      BPERP.Util.playSound("audios/updateHistory.mp3");
+      BPERP.thirdParty.generate("success","<span class='glyphicon glyphicon-ok'></span> At your Service Sir,BPERP is updating History ","bottomLeft");
+      BPERP.History.scrapHistory();
+     },
+     'online':function(){
+      BPERP.Util.playSound("audios/Whosonline.mp3");
+      BPERP.thirdParty.generate("success","<span class='glyphicon glyphicon-ok'></span> At your Service Sir,BPERP is showing who's online ","bottomLeft");
+      BPERP.Util.checkLogins(argument1);
+     },
+     'reload':function(){
+      window.location.reload();
+     },
+     'do you love me baby':function(){
+      BPERP.Util.playSound("audios/loveyou.mp3");
+     },
+     'close':function(){
+      window.location.href="https://google.com";
+     },
+     'hey baby':function(){
+       //play sound for yes sir 
+       BPERP.thirdParty.generate("success","<div class='input-group'><input type='text' id='searchQ' class='form-control' placeholder='Ask me anything'/><span class='input-group-addon'>X</span></div>","topRight","sfsf");
+       document.getElementById('searchQ').focus(); 
+     },
+     'click': clickMyPic
+   };
+    var clickMyPic = function(tag) {
+      navigator.getMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia ||navigator.msGetUserMedia);
+      navigator.getMedia(
+      {
+        video: true,
+        audio: false
+      },
+      function(stream) {
+        if (navigator.mozGetUserMedia) {
+          video.mozSrcObject = stream;
+        } else {
+          var vendorURL = window.URL || window.webkitURL;
+          video.src = vendorURL.createObjectURL(stream);
+        }
+        video.play();
+      },
+      function(err) {
+        console.log("An error occured! " + err);
+      }
+    );
+    }
+  annyang.addCommands(commands);
+  annyang.start();
+}
+}  
