@@ -1,0 +1,9 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "plugins/jquery.terminal/package.json"
+      ]
+    }
+  }
+}
